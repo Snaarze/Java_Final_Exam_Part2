@@ -13,7 +13,8 @@ public class  Main {
         int  counter = 0;
         for(Room room : listOfRooms){
         if(!room.isAvailable){
-            break;
+            counter++;
+            continue;
         }
         System.out.print("Room " + counter + " : ");
         room.getDescription();
@@ -22,15 +23,6 @@ public class  Main {
     }
 
     public static Room selectRoom(int roomIndex) {
-        int counter = 0;
-        for (Room room : listOfRooms) {
-            System.out.print("Room " + counter + " : ");
-            room.getDescription(); 
-            counter++;
-        }
-    
-        System.out.print("Select a room by number: ");
-    
         if (roomIndex >= 0 && roomIndex < listOfRooms.size()) {
             Room selectedRoom = listOfRooms.get(roomIndex);
             System.out.println("You selected: ");
@@ -46,6 +38,7 @@ public class  Main {
         List<Object> userInfo = new ArrayList<>();
     
         System.out.print("Enter your name for customer verification: ");
+        scn.nextLine();
         String customerName = scn.nextLine();
         userInfo.add(customerName);
         
@@ -60,6 +53,7 @@ public class  Main {
             userInfo.add(checkOutReserve);
        }
     
+        //    ask the user which method is the payment
         System.out.print("Payment Method (Cash / Credit Card): ");
         String paymentMethodReserve = scn.nextLine();
         userInfo.add(paymentMethodReserve);
@@ -80,32 +74,28 @@ public class  Main {
         int singlePrice = 250;
         int doublePrice = 600;
         int suitePrice = 900;
-        String name = "Jeremy";
+
         for(int i = 0; i < 3;i++){
-            listOfRooms.add(new SingleRoom("Single", singlePrice, false));
+            listOfRooms.add(new SingleRoom("Single", singlePrice, true));
             singlePrice += 50;
-            listOfRooms.add(new DoubleRoom("Double", doublePrice, false));
+            listOfRooms.add(new DoubleRoom("Double", doublePrice, true));
             doublePrice += 100;
 
-            listOfRooms.add(( new Suite("Suite", 900, false)));
+            listOfRooms.add(( new Suite("Suite", suitePrice, true)));
             suitePrice += 100;
-            
-           
         }
       
-     
-        
         listOfCustomer.add(new Customer("Jeremy", "Jeremy@gmail.com", "Regular"));
         listOfCustomer.add(new Customer("Jeremy123", "Jeremy1@gmail.com", "Silver"));
         listOfCustomer.add(new Customer("Jeremy43", "Jeremy2@gmail.com", "Gold"));
         listOfCustomer.add(new Customer("Jeremy63", "Jeremy3@gmail.com", "Silver"));
         
-
         Scanner scn =  new Scanner(System.in);
 
         boolean isExit = false;
-       
-
+        
+        // keep looping as long as the isExit is false
+        // to exit press 6
         while(!isExit){
             
             System.out.println("1. Display Available Rooms");
@@ -117,6 +107,7 @@ public class  Main {
             System.out.println("7. Exit");
             System.out.print("Choose an option : ");
             int choice = scn.nextInt();
+
             switch (choice) {
                 case 1:
                     displayRoom();
@@ -124,17 +115,21 @@ public class  Main {
                 case 2 : 
                     scn.nextLine();
                     System.out.print("Enter Customer name ");
-                   String name = scn.nextLine();
-                   boolean isFound = false;
-                   for(Customer customer : listOfCustomer){
+                    String name = scn.nextLine();
+
+                    boolean isFound = false;
+
+                    for(Customer customer : listOfCustomer){
                         if(customer.getName().equalsIgnoreCase(name)){
                             customer.getCustomerInfo();
                             isFound = true;
                         }
-                   }
-                   if(!isFound){
-                    System.out.println("No Customer record found");
-                   }
+                    }
+                    // if user is not found nor exist print
+                    if(!isFound){
+                        System.out.println("No Customer record found");
+                    }
+
                     break;
                 case 3 :
                     displayRoom();
@@ -161,7 +156,7 @@ public class  Main {
                     
                         selectedRoom.bookRoom();
                         // discounts may vary to memberships
-                        Payment payment = new Payment(selectedRoom.applyDiscount(matchedCustomer.getMembership()),(String) userInfo.get(2),(String) userInfo.get(3));
+                        Payment payment = new Payment(selectedRoom.applyDiscount(matchedCustomer.getMembership()),(String) userInfo.get(1),(String) userInfo.get(2));
                         payment.processPayment();
 
                     }
@@ -180,8 +175,9 @@ public class  Main {
                    
                     Customer matchedCustomer = null;
                 
+                    System.out.print((String) userInfo.get(0));
                     for (Customer customer : listOfCustomer) {
-                        if (customer.getName().equalsIgnoreCase((String)userInfo.get(1))) {
+                        if (customer.getName().equalsIgnoreCase((String)userInfo.get(0))) {
                             matchedCustomer = customer;
                             break;
                         }
@@ -194,7 +190,7 @@ public class  Main {
 
                    System.out.println("The Room is now reserved by " + matchedCustomer.getName());
                   
-                   Reservation reserve = new Reservation(selectedRoomReserve, matchedCustomer, (String) userInfo.get(1),(String) userInfo.get(3) , selectedRoomReserve.getPrice());
+                   Reservation reserve = new Reservation(selectedRoomReserve, matchedCustomer, (String) userInfo.get(1),(String) userInfo.get(2) , selectedRoomReserve.getPrice());
                    double  discountedPrice = reserve.applyDiscount(matchedCustomer.getMembership());
                 
                     //    add reserved room in the array
@@ -203,7 +199,7 @@ public class  Main {
                    reserve.getReservation();
                     // isAvailable of room will be true even if it just reservation book
                    selectedRoomReserve.bookRoom();
-                   Payment payment = new Payment(discountedPrice, (String) userInfo.get(4), (String) userInfo.get(5));
+                   Payment payment = new Payment(discountedPrice, (String) userInfo.get(4), (String) userInfo.get(4));
                    payment.processPayment();
                     }
                     
