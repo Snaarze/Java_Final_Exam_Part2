@@ -77,15 +77,23 @@ public class  Main {
 
     public static void main(String[] args) {
         // create a 3 rooms each type of the room
-        listOfRooms.add(new SingleRoom("Single", 200, true));
-        listOfRooms.add(new SingleRoom("Single", 250, false));
-        listOfRooms.add(new SingleRoom("Single", 300, false));
-        listOfRooms.add(new DoubleRoom("Double", 600, false));
-        listOfRooms.add(new DoubleRoom("Double", 700, false));
-        listOfRooms.add(new DoubleRoom("Double",800, false));
-        listOfRooms.add(( new Suite("Suite", 900, false)));
-        listOfRooms.add(( new Suite("Suite", 1000, true)));
-        listOfRooms.add(( new Suite("Suite", 1100, false)));
+        int singlePrice = 250;
+        int doublePrice = 600;
+        int suitePrice = 900;
+        String name = "Jeremy";
+        for(int i = 0; i < 3;i++){
+            listOfRooms.add(new SingleRoom("Single", singlePrice, false));
+            singlePrice += 50;
+            listOfRooms.add(new DoubleRoom("Double", doublePrice, false));
+            doublePrice += 100;
+
+            listOfRooms.add(( new Suite("Suite", 900, false)));
+            suitePrice += 100;
+            
+           
+        }
+      
+     
         
         listOfCustomer.add(new Customer("Jeremy", "Jeremy@gmail.com", "Regular"));
         listOfCustomer.add(new Customer("Jeremy123", "Jeremy1@gmail.com", "Silver"));
