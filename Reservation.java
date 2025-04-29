@@ -21,9 +21,9 @@ public class Reservation {
         System.out.println("Price  : " + this.totalPrice);
     }
 
-    public void applyDiscount(double discountPercentage) {
-        if (discountPercentage >= 0 && discountPercentage <= 100) {
-            totalPrice -= totalPrice * discountPercentage / 100;
+    public void applyDiscount(String membershipType) {
+        if(membershipType.equalsIgnoreCase("Silver")){
+            
         }
     }
 }

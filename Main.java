@@ -67,7 +67,8 @@ public class  Main {
             System.out.println("3. Select room");
             System.out.println("4. Reserve a room");
             System.out.println("5. Reservation Summary");
-            System.out.println("6. Exit");
+            System.out.println("6. Release a room");
+            System.out.println("7. Exit");
             System.out.print("Choose an option : ");
             int choice = scn.nextInt();
             switch (choice) {
@@ -194,7 +195,24 @@ public class  Main {
                         reserveRoom.getReservation();
                     }
                     break;
-                case 6 :
+                case 6 : 
+                    displayRoom();
+                    scn.nextLine();
+
+                    int indexOfRoom = scn.nextInt();
+
+                    Room selecedRoom = selectRoom(indexOfRoom);
+
+                    if(selecedRoom.isAvailable()){
+                        System.out.println("The room that you are trying to released is already available");
+                        return;
+                    }else {
+                        selecedRoom.releaseRoom();
+                        System.out.println("Room availability is : " + selecedRoom.isAvailable());
+                        return;
+                    }
+
+                case 7 :
                    System.out.println("Exiting....");
                    isExit = true;
                     break;
