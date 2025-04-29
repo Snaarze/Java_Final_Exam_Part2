@@ -30,6 +30,16 @@ abstract class Room {
         return  this.isAvailable = true;
     }
 
+    public double applyDiscount(String membershipType) {
+        if(membershipType.equalsIgnoreCase("Silver")){
+            this.price *= 0.9;
+        }else if(membershipType.equalsIgnoreCase("Gold")){
+            this.price *= 0.8;
+        }
+
+        return price;
+    }
+
     void getDescription(){
 
     }

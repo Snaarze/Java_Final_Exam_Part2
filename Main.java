@@ -1,14 +1,20 @@
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 public class  Main {
     static ArrayList<Room> listOfRooms = new ArrayList<>();
     static ArrayList<Customer> listOfCustomer = new ArrayList<>();
     static ArrayList<Reservation> listOfReservations = new ArrayList<>();
 
+
+    // could have used, for loop here instead of foreach, but before i forgot how to uses the ArrayList.
     static void displayRoom(){
         int  counter = 0;
         for(Room room : listOfRooms){
+        if(!room.isAvailable){
+            break;
+        }
         System.out.print("Room " + counter + " : ");
         room.getDescription();
         counter++;
@@ -35,6 +41,38 @@ public class  Main {
             return null;
         }
     }
+
+    public static List<Object> askUser(Scanner scn, boolean isReserve) {
+        List<Object> userInfo = new ArrayList<>();
+    
+        System.out.print("Enter your name for customer verification: ");
+        String customerName = scn.nextLine();
+        userInfo.add(customerName);
+        
+        // if true ask user when to check in rooms, if not skip this ask
+       if(isReserve){
+            System.out.print("Enter the date of check-in (Format mm-dd-yy): ");
+            String checkInReserve = scn.nextLine();
+            userInfo.add(checkInReserve);
+        
+            System.out.print("Enter the date of check-out (Format mm-dd-yy): ");
+            String checkOutReserve = scn.nextLine();
+            userInfo.add(checkOutReserve);
+       }
+    
+        System.out.print("Payment Method (Cash / Credit Card): ");
+        String paymentMethodReserve = scn.nextLine();
+        userInfo.add(paymentMethodReserve);
+    
+        if (paymentMethodReserve.equalsIgnoreCase("Credit Card")) {
+            System.out.print("Enter Credit Card Number: ");
+            String creditCardNumbers = scn.nextLine();
+            userInfo.add(creditCardNumbers);
+        }
+    
+        return userInfo;
+    }
+    
     
 
     public static void main(String[] args) {
@@ -98,55 +136,27 @@ public class  Main {
 
                    System.out.println(selectedRoom.isAvailable());
                     if (selectedRoom.isAvailable() == true) {
-                        System.out.print("Enter your name for customer verification: ");
-                        scn.nextLine();
-                        String customerName = scn.nextLine();
+                        List<Object>  userInfo = askUser(scn, false);
                         Customer matchedCustomer = null;
                     
                         for (Customer customer : listOfCustomer) {
-                            if (customer.getName().equalsIgnoreCase(customerName)) {
+                            if (customer.getName().equalsIgnoreCase((String) userInfo.get(0))){
                                 matchedCustomer = customer;
                                 break;
                             }
                         }
-                        selectedRoom.bookRoom();
                     
                         if (matchedCustomer == null) {
                             System.out.println("Customer not found. Booking cannot proceed.");
                             break;
                         }
                     
-                        double originalPrice = selectedRoom.getPrice();
-                        double finalPrice = originalPrice;
-                        String membership = matchedCustomer.getMembership();
-                    
-                        if (membership.equalsIgnoreCase("Silver")) {
-                            finalPrice = originalPrice * 0.9;
-                            System.out.println("Silver Member: 10% discount applied.");
-                        } else if (membership.equalsIgnoreCase("Gold")) {
-                            finalPrice = originalPrice * 0.8;
-                            System.out.println("Gold Member: 20% discount applied.");
-                        } else {
-                            System.out.println("No discount applied.");
-                        }
-                    
-                        System.out.printf("Final price after discount: $%.2f%n", finalPrice);
-                    
-                        System.out.print("Enter payment method (Cash or Credit Card): ");
-                        String method = scn.nextLine();
-                        String cardNumber = "";
-                    
-                        if (method.equalsIgnoreCase("Credit Card")) {
-                            System.out.print("Enter credit card number: ");
-                            cardNumber = scn.nextLine();
-                        }
-                        
-                        Payment payment = new Payment(finalPrice, method, cardNumber);
+                        selectedRoom.bookRoom();
+                        // discounts may vary to memberships
+                        Payment payment = new Payment(selectedRoom.applyDiscount(matchedCustomer.getMembership()),(String) userInfo.get(2),(String) userInfo.get(3));
                         payment.processPayment();
 
                     }
-                    
-
                     break;
                 case 4 : 
 
@@ -156,20 +166,14 @@ public class  Main {
                 int selectedRoomIndexReserve = scn.nextInt();
                 Room selectedRoomReserve = selectRoom(selectedRoomIndexReserve);
 
-
+                    // if the selectedRoom is available proceed of getting the user Information
                 if (selectedRoomReserve.isAvailable() == true) {
-                    System.out.print("Enter your name for customer verification: ");
-                    scn.nextLine(); 
-                    String customerName = scn.nextLine();
-
-                    System.out.print("Enter the date of check in : Format(mm/dd/yy) ");
-                    String checkInReserve = scn.nextLine();
-                    System.out.print("Enter the date of check out : Format(mm/dd/yy) ");
-                    String checkOutReserve = scn.nextLine();
+                    List<Object>  userInfo = askUser(scn, true);
+                   
                     Customer matchedCustomer = null;
                 
                     for (Customer customer : listOfCustomer) {
-                        if (customer.getName().equalsIgnoreCase(customerName)) {
+                        if (customer.getName().equalsIgnoreCase((String)userInfo.get(1))) {
                             matchedCustomer = customer;
                             break;
                         }
@@ -179,14 +183,21 @@ public class  Main {
                         System.out.println("Customer not found. Booking cannot proceed.");
                         break;
                     }
-                    
-                   System.out.println("The Room is now reserved by " + matchedCustomer.getName());
 
-                   Reservation reserve = new Reservation(selectedRoomReserve, matchedCustomer, checkInReserve, checkOutReserve, 300);
+                   System.out.println("The Room is now reserved by " + matchedCustomer.getName());
+                  
+                   Reservation reserve = new Reservation(selectedRoomReserve, matchedCustomer, (String) userInfo.get(1),(String) userInfo.get(3) , selectedRoomReserve.getPrice());
+                   double  discountedPrice = reserve.applyDiscount(matchedCustomer.getMembership());
+                
+                    //    add reserved room in the array
                    listOfReservations.add(reserve);
-                   System.err.println(listOfReservations);
+                    //    print the reserve room    
                    reserve.getReservation();
-                }
+                    // isAvailable of room will be true even if it just reservation book
+                   selectedRoomReserve.bookRoom();
+                   Payment payment = new Payment(discountedPrice, (String) userInfo.get(4), (String) userInfo.get(5));
+                   payment.processPayment();
+                    }
                     
                     break;
 

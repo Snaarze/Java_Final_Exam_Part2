@@ -21,9 +21,13 @@ public class Reservation {
         System.out.println("Price  : " + this.totalPrice);
     }
 
-    public void applyDiscount(String membershipType) {
+    public double applyDiscount(String membershipType) {
         if(membershipType.equalsIgnoreCase("Silver")){
-            
+            this.totalPrice *= 0.9;
+        }else if(membershipType.equalsIgnoreCase("Gold")){
+            this.totalPrice *= 0.8;
         }
+
+        return totalPrice;
     }
 }
